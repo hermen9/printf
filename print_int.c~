@@ -1,0 +1,58 @@
+#include "main.h"
+
+/**
+ * print_int - Print an integer.
+ * @types: The va_list of arguments.
+ * @buffer: The output buffer.
+ * @flags: Flags for formatting.
+ * @width: The field width.
+ * @precision: The precision.
+ * @size: Size flag (S_LONG or S_SHORT).
+ *
+ * Return: The number of characters written to the buffer.
+ */
+int print_int(va_list types, char buffer[], int flags, int width, int precision, int size)
+{
+	int num = va_arg(types, int); /* Retrieve the integer argument */
+	char num_str[BUFF_SIZE];
+	int num_len = sprintf(num_str, "%d", num); /* Convert the integer to a string */
+	int total_len = num_len;
+	int is_negative = (num < 0); /* Check if the number is negative */
+	int padding = (width > num_len) ? width - num_len : 0; /* Calculate padding */
+
+	if (is_negative)
+	{
+		total_len++; /* Account for the negative sign */
+		padding--;
+	}
+
+	if (!(flags & F_MINUS)) /* Check for left alignment flag */
+	{
+		while (padding > 0) /* Print leading padding characters (if any) */
+		{
+			buffer[total_len - padding] = (flags & F_ZERO) ? '0' : ' ';
+			padding--;
+		}
+	}
+
+	if (is_negative)
+	{
+		buffer[total_len - num_len - 1] = '-'; /* Print the negative sign (if any) */
+	}
+
+	for (int i = 0; i < num_len; i++) /* Print the number */
+	{
+		buffer[total_len - num_len + i] = num_str[i];
+	}
+
+	if (flags & F_MINUS) /* Check for left alignment flag */
+	{
+		while (padding > 0) /* Print trailing padding characters (if any) */
+		{
+			buffer[total_len - padding] = ' ';
+			padding--;
+		}
+	}
+
+	return total_len;
+}
